@@ -18,7 +18,6 @@ def gaussian_eliminate(aa, bb):
     
     
     # first loop
-    #for ii in range(0, aa.shape[0])
     fac1 = aa[1,0]/aa[0,0]
     fac2 = aa[2,0]/aa[0,0]
     aa[1] = aa[1] - fac1*aa[0]
@@ -35,4 +34,5 @@ def gaussian_eliminate(aa, bb):
     xx[2] = bb[2]/aa[2,2]
     xx[1] = (bb[1] - aa[1,2]*xx[2]) / aa[1,1]
     xx[0] = (bb[0] - aa[0,2]*xx[2] - aa[0,1]*xx[1]) / aa[0,0]
+    
     return xx
