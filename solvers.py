@@ -25,6 +25,20 @@ def gaussian_eliminate(aa, bb):
     bb[1] = bb[1] - fac1*bb[0]
     bb[2] = bb[2] - fac2*bb[0]
     
+    # before moving on, swap lines if neccessary
+    len1 = aa[1].nonzero()[0].shape[0]
+    len2 = aa[2].nonzero()[0].shape[0]
+    sum1 = sum(np.abs(aa[1]))
+    sum2 = sum(np.abs(aa[2]))
+    abs1 = np.abs(aa[1,1])
+    abs2 = np.abs(aa[2,1])
+    
+    if abs1 < abs2:
+        print(aa)
+        aa[[1,2]]=aa[[2,1]]
+        bb[[1,2]]=bb[[2,1]]
+        print(aa)
+    
     # second loop
     fac3 = aa[2,1]/aa[1,1]
     aa[2] = aa[2] - fac3*aa[1]
