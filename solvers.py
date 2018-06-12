@@ -15,40 +15,30 @@ def gaussian_eliminate(aa, bb):
     """
     nn = aa.shape[0]
     xx = np.zeros((nn,), dtype=float)
-    
-    
-    # first loop
-    fac1 = aa[1,0]/aa[0,0]
-    fac2 = aa[2,0]/aa[0,0]
-    aa[1] = aa[1] - fac1*aa[0]
-    aa[2] = aa[2] - fac2*aa[0]
-    bb[1] = bb[1] - fac1*bb[0]
-    bb[2] = bb[2] - fac2*bb[0]
-    
-    # before moving on, swap lines if neccessary
-    '''Different approaches
-    len1 = aa[1].nonzero()[0].shape[0]
-    len2 = aa[2].nonzero()[0].shape[0]
-    sum1 = sum(np.abs(aa[1]))
-    sum2 = sum(np.abs(aa[2]))'''
-    abs1 = np.abs(aa[1,1])
-    abs2 = np.abs(aa[2,1])
-    
-    if abs1 < abs2:
-        aa[[1,2]]=aa[[2,1]]
-        bb[[1,2]]=bb[[2,1]]
-    
-    # second loop
-    fac3 = aa[2,1]/aa[1,1]
-    aa[2] = aa[2] - fac3*aa[1]
-    bb[2] = bb[2] - fac3*bb[1]
-    
+
+    for jj in range(0, nn):
+        # before moving on, swap lines if neccessary
+        max_idx = np.abs(aa[jj:, jj]).argmax() + jj  # we skipped jj rows
+
+        if jj != max_idx:
+            aa[[jj, max_idx]] = np.array(aa[[max_idx, jj]])
+            bb[[jj, max_idx]] = np.array(bb[[max_idx, jj]])
+
+        # if the current value is close to zero, the matrix is linear dependent
+        if np.abs(aa[jj, jj]) < 1e-13:
+            return None
+
+        # do gauss for one column
+        factors = np.zeros(nn)
+        for ii in range(jj+1, nn):
+            factors[ii] = aa[ii, jj]/aa[jj, jj]
+            aa[ii] = aa[ii] - factors[ii]*aa[jj]
+            bb[ii] = bb[ii] - factors[ii]*bb[jj]
+
     # calculate xx
-    if aa[2,2] == 0:
-        xx = None
-    else:
-        xx[2] = bb[2]/aa[2,2]
-        xx[1] = (bb[1] - aa[1,2]*xx[2]) / aa[1,1]
-        xx[0] = (bb[0] - aa[0,2]*xx[2] - aa[0,1]*xx[1]) / aa[0,0]
-    
+    for jj in range(nn-1, -1, -1):
+        for ii in range(jj+1, nn):
+            bb[jj] = bb[jj] - aa[jj, ii] * xx[ii]
+        xx[jj] = bb[jj]/aa[jj, jj]
+
     return xx
