@@ -26,4 +26,10 @@ def read_matrix(fname):
 
 aa, bb = read_matrix("linsolve.in")
 xx_gauss = solvers.gaussian_eliminate(aa, bb)
-print(xx_gauss)
+
+file = open("linsolve.out", 'w')
+if xx_gauss is None:
+    file.write("ERROR: LINDEP")
+else:
+    np.savetxt(xx_gauss)
+file.close()
